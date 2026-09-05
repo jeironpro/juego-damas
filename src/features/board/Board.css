@@ -1,0 +1,72 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  padding: var(--spacing-sm);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.board__square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  aspect-ratio: 1;
+}
+
+.board__square--light {
+  background-color: var(--color-board-light);
+}
+
+.board__square--dark {
+  background-color: var(--color-board-dark);
+  cursor: pointer;
+}
+
+.board__square--dark:disabled {
+  cursor: default;
+}
+
+.board__square--selected {
+  box-shadow: inset 0 0 0 4px var(--color-primary);
+  border-radius: 4px;
+}
+
+.board__hint {
+  position: absolute;
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  background-color: rgb(255 255 255 / 0.55);
+  pointer-events: none;
+}
+
+.piece {
+  display: block;
+  width: 78%;
+  height: 78%;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.piece--player-1 {
+  background-color: var(--color-piece-player-1);
+  border: 2px solid var(--color-piece-player-1-border);
+}
+
+.piece--player-2 {
+  background-color: var(--color-piece-player-2);
+  border: 2px solid var(--color-piece-player-2-border);
+}
+
+.piece--king {
+  box-shadow: inset 0 0 0 4px var(--color-piece-king);
+}

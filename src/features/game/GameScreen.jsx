@@ -5,7 +5,8 @@ import Board from '@/features/board/Board.jsx';
 import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
 import './GameScreen.css';
 
-// Pantalla de partida: marcador arriba, tablero al centro y controles debajo
+// Pantalla de partida: marcador arriba, tablero al centro y controles debajo.
+// Con botMode activo, el tablero se bloquea mientras piensa el bot (jugador 2)
 function GameScreen({
   game,
   onMove,
@@ -13,9 +14,10 @@ function GameScreen({
   player1Name = 'Jugador 1',
   player2Name = 'Jugador 2',
   badge = null,
-  botThinking = false,
+  botMode = false,
 }) {
-  const undoDisabled = botThinking || game.undoUsed || game.history.length === 0 || game.over;
+  const botTurn = botMode && game.turn === PLAYER_2 && !game.over;
+  const undoDisabled = botTurn || game.undoUsed || game.history.length === 0 || game.over;
   const winnerName =
     game.winner === PLAYER_1 ? player1Name : game.winner === PLAYER_2 ? player2Name : null;
 
@@ -29,13 +31,13 @@ function GameScreen({
         badge={badge}
         turn={game.turn}
       />
-      <Board
-        board={game.board}
-        turn={game.turn}
-        onMove={onMove}
-        disabled={game.over || botThinking}
-      />
+      <Board board={game.board} turn={game.turn} onMove={onMove} disabled={game.over || botTurn} />
       <div className="game-screen__controls">
+        {botTurn && (
+          <p className="game-screen__thinking" role="status">
+            El bot está pensando…
+          </p>
+        )}
         <Button variant="secondary" icon="undo" onClick={onUndo} disabled={undoDisabled}>
           Deshacer
         </Button>

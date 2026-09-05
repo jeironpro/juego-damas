@@ -42,6 +42,30 @@ describe('Board', () => {
     expect(rivalSquare).not.toHaveClass('board__square--selected');
   });
 
+  it('avisa de la captura obligatoria y resalta las fichas que pueden comer', async () => {
+    const user = userEvent.setup();
+    const board = buildBoard([
+      [3, 2, PLAYER_1],
+      [2, 1, PLAYER_2],
+      [7, 0, PLAYER_1],
+    ]);
+    render(<Board board={board} turn={PLAYER_1} onMove={() => {}} />);
+    // la ficha (3,2) puede capturar: fila 4 columna 3
+    const capturingSquare = screen.getByRole('button', { name: 'Fila 4 columna 3' });
+    expect(capturingSquare).toHaveClass('board__square--can-capture');
+    // sin selección se indica la captura obligatoria
+    expect(screen.getByRole('status')).toHaveTextContent(/captura obligatoria/i);
+    // al elegir una ficha que no puede capturar, se avisa
+    await user.click(screen.getByRole('button', { name: 'Fila 8 columna 1' }));
+    expect(screen.getByRole('status')).toHaveTextContent(/no puede capturar/i);
+  });
+
+  it('no muestra el aviso de captura cuando no hay capturas', () => {
+    const game = createGame();
+    render(<Board board={game.board} turn={game.turn} onMove={() => {}} />);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
   it('muestra la corona en el centro de las fichas que son damas', () => {
     const board = buildBoard([
       [4, 3, PLAYER_1, true],

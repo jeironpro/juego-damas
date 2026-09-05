@@ -5,7 +5,8 @@ import { getLegalMoves } from '@/features/game/moves.js';
 import Square from './Square.jsx';
 import './Board.css';
 
-// Tablero 8x8: clic en una ficha propia para seleccionarla y clic en un destino para mover
+// Tablero 8x8: clic en una ficha propia para seleccionarla y clic en un destino para mover.
+// Cuando hay captura obligatoria se resaltan las fichas que pueden comer y se avisa al jugador.
 function Board({ board, turn, onMove, disabled = false }) {
   const [selection, setSelection] = useState(null);
 
@@ -15,12 +16,29 @@ function Board({ board, turn, onMove, disabled = false }) {
   const activeSelection =
     selectedPiece !== null && selectedPiece.player === turn ? selection : null;
 
+  // Movimientos legales del turno (con captura obligatoria solo habrá capturas)
+  const allMoves = useMemo(
+    () => (disabled ? [] : getLegalMoves(board, turn)),
+    [board, turn, disabled],
+  );
+
+  // Orígenes de las fichas que pueden capturar
+  const captureOrigins = useMemo(
+    () =>
+      new Set(
+        allMoves
+          .filter((move) => move.captured.length > 0)
+          .map((move) => `${move.from.row},${move.from.col}`),
+      ),
+    [allMoves],
+  );
+
   const legalMoves = useMemo(() => {
     if (activeSelection === null) return [];
-    return getLegalMoves(board, turn).filter(
+    return allMoves.filter(
       (move) => move.from.row === activeSelection.row && move.from.col === activeSelection.col,
     );
-  }, [board, turn, activeSelection]);
+  }, [allMoves, activeSelection]);
 
   const targetKeys = useMemo(
     () =>
@@ -32,6 +50,18 @@ function Board({ board, turn, onMove, disabled = false }) {
       ),
     [legalMoves],
   );
+
+  // Aviso de captura obligatoria: sin selección, o al elegir una ficha que no puede comer
+  const hasCaptures = captureOrigins.size > 0;
+  const selectedHasCaptures = legalMoves.some((move) => move.captured.length > 0);
+  const notice =
+    !disabled && hasCaptures
+      ? selection === null
+        ? 'Captura obligatoria: elige una ficha resaltada para comer'
+        : !selectedHasCaptures
+          ? 'Esta ficha no puede capturar: elige una ficha resaltada'
+          : null
+      : null;
 
   const handleSquareClick = useCallback(
     (row, col) => {
@@ -59,6 +89,7 @@ function Board({ board, turn, onMove, disabled = false }) {
       const selected =
         activeSelection !== null && activeSelection.row === row && activeSelection.col === col;
       const isTarget = targetKeys.has(`${row},${col}`);
+      const canCapture = captureOrigins.has(`${row},${col}`);
       return (
         <Square
           key={`${row}-${col}`}
@@ -68,6 +99,7 @@ function Board({ board, turn, onMove, disabled = false }) {
           piece={piece}
           selected={selected}
           isTarget={isTarget}
+          canCapture={canCapture}
           onClick={() => handleSquareClick(row, col)}
           disabled={disabled}
         />
@@ -76,8 +108,15 @@ function Board({ board, turn, onMove, disabled = false }) {
   ).flat();
 
   return (
-    <div className="board" role="grid" aria-label="Tablero de damas">
-      {squares}
+    <div className="board">
+      <div className="board__grid" role="grid" aria-label="Tablero de damas">
+        {squares}
+      </div>
+      {notice !== null && (
+        <p className="board__notice" role="status">
+          {notice}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,30 +1,29 @@
 # Juego de Damas
 
-## 📌 Descripción
+## Descripción
 
-Juego de **damas españolas (8×8)** implementado como aplicación web. Forma parte de mi
-portafolio personal y demuestra buenas prácticas de programación, organización y documentación
-en GitHub: desarrollo por pull requests, tests automatizados, CI, linting y un libro de estilo.
-
-Puedes jugar de dos maneras:
+Juego de **damas españolas (8×8)** implementado como aplicación web. Se puede jugar de dos
+maneras:
 
 - **Contra el bot** (implementado en JavaScript puro) en tres niveles: Fácil, Medio y Difícil.
 - **Dos jugadores en el mismo tablero** (hot-seat), turno alternado.
 
 La interfaz incluye un **scoreboard** con los contadores de fichas (descuentan al capturar;
-pierde quien llegue a 0) y un botón **Deshacer** que permite revertir una sola jugada por partida.
+pierde quien llegue a 0), un botón **Deshacer** que permite revertir una sola jugada por partida
+y botones para **reiniciar** la partida o **volver al menú** de selección de modo. Cuando hay
+captura obligatoria, el tablero resalta las fichas que pueden comer y lo indica al jugador.
 
-## 🎮 Reglas del juego
+## Reglas del juego
 
 - Tablero de 8×8 con **12 fichas por jugador**.
 - Las fichas se mueven una casilla en diagonal hacia delante.
 - **Captura obligatoria**: si una ficha puede comer, debe hacerlo; la ficha puede capturar
   hacia atrás y encadenar capturas múltiples.
 - Al llegar a la última fila, la ficha se corona y se convierte en **dama**, que se mueve una
-  casilla en diagonal en cualquier dirección (se identifica con un anillo dorado).
+  casilla en diagonal en cualquier dirección (se identifica con una corona dorada).
 - Pierde el jugador que se queda **sin fichas (0)** o **sin movimientos legales**.
 
-## 🛠️ Stack
+## Stack
 
 | Tecnología               | Uso                                                |
 | ------------------------ | -------------------------------------------------- |
@@ -35,7 +34,7 @@ pierde quien llegue a 0) y un botón **Deshacer** que permite revertir una sola 
 | ESLint + Prettier        | Lint y formato (Husky + lint-staged en pre-commit) |
 | GitHub Actions           | CI: lint, tests y build por PR                     |
 
-## 🚀 Cómo correr
+## Cómo correr
 
 Requisitos: Node.js 24 (ver `.nvmrc`) y Yarn 4.
 
@@ -49,7 +48,7 @@ yarn lint        # ejecuta ESLint
 yarn format      # formatea el código con Prettier
 ```
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 src/
@@ -65,7 +64,7 @@ docs/
   style-guide.md        # libro de estilo (colores, tipografía, componentes)
 ```
 
-## 🎨 Diseño
+## Diseño
 
 La dirección visual es clara y minimalista, inspirada en la estética moderna de producto que se
 recopila en [Mobbin](https://mobbin.com/). Todos los valores visuales (paleta, tipografía,
@@ -73,14 +72,14 @@ espaciados, radios, sombras) están definidos en el [libro de estilo](docs/style
 materializados como _custom properties_ en `src/styles/tokens.css`. Los iconos usan la librería
 **Material Symbols** de Google.
 
-## ✅ Calidad
+## Calidad
 
-- **Tests**: 58 tests entre el motor de reglas, el bot, hooks y componentes (`yarn test`).
+- **Tests**: 64 tests entre el motor de reglas, el bot, hooks y componentes (`yarn test`).
 - **CI**: pipeline en `.github/workflows/ci.yml` que ejecuta lint, tests y build en cada pull
   request y push a `main`.
 - **Pre-commit**: Husky + lint-staged aplican ESLint y Prettier sobre los archivos modificados.
 
-## 📜 Licencia
+## Licencia
 
 Este proyecto está bajo la licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más
 detalles.

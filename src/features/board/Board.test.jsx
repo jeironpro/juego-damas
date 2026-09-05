@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
 import { createGame } from '@/features/game/game.js';
+import { buildBoard } from '@/features/game/test-utils.js';
 import Board from './Board.jsx';
 
 describe('Board', () => {
@@ -38,6 +40,18 @@ describe('Board', () => {
     const rivalSquare = screen.getByRole('button', { name: 'Fila 1 columna 2' });
     await user.click(rivalSquare);
     expect(rivalSquare).not.toHaveClass('board__square--selected');
+  });
+
+  it('muestra la corona en el centro de las fichas que son damas', () => {
+    const board = buildBoard([
+      [4, 3, PLAYER_1, true],
+      [5, 4, PLAYER_2],
+    ]);
+    render(<Board board={board} turn={PLAYER_1} onMove={() => {}} />);
+    const kingSquare = screen.getByRole('button', { name: 'Fila 5 columna 4' });
+    expect(kingSquare.querySelector('.piece__crown')).toBeInTheDocument();
+    const manSquare = screen.getByRole('button', { name: 'Fila 6 columna 5' });
+    expect(manSquare.querySelector('.piece__crown')).not.toBeInTheDocument();
   });
 
   it('ignora los clics cuando el tablero está deshabilitado', async () => {

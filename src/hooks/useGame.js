@@ -3,8 +3,8 @@ import { createGame, applyMove, undoMove } from '@/features/game/game.js';
 import { chooseMove } from '@/features/bot/bot.js';
 import { PLAYER_2 } from '@/features/game/constants.js';
 
-// Pausa para que se aprecie la jugada del bot
-const BOT_DELAY_MS = 600;
+// Pausa para que se aprecie la jugada del bot y el turno se siga cómodamente
+const BOT_DELAY_MS = 1500;
 
 // Estado de la partida: movimientos, deshacer y reinicio.
 // Si se pasa botDifficulty, el bot (jugador 2) responde automáticamente a cada jugada.

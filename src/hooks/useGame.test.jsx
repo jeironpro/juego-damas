@@ -30,7 +30,7 @@ describe('useGame', () => {
     });
     expect(result.current.game.turn).toBe(PLAYER_2);
     act(() => {
-      vi.advanceTimersByTime(700);
+      vi.advanceTimersByTime(1600);
     });
     expect(result.current.game.turn).toBe(PLAYER_1);
   });

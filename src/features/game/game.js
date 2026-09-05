@@ -25,15 +25,10 @@ export function createGame() {
   };
 }
 
-export function getLegalMovesForGame(game) {
-  if (game.over) return [];
-  return getLegalMoves(game.board, game.turn);
-}
-
 // Aplica un movimiento validándolo; devuelve un estado nuevo (inmutable)
 export function applyMove(game, move) {
-  if (game.over) throw new Error('La partida ya terminó');
-  if (!isLegalMove(game.board, game.turn, move)) throw new Error('Movimiento no válido');
+  if (game.over) throw new Error('The game has already ended');
+  if (!isLegalMove(game.board, game.turn, move)) throw new Error('Invalid move');
 
   const nextBoard = applyMoveToBoard(game.board, move);
   const nextTurn = switchPlayer(game.turn);

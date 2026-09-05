@@ -4,14 +4,14 @@ import userEvent from '@testing-library/user-event';
 import App from './App.jsx';
 
 describe('App', () => {
-  it('muestra la pantalla de inicio con las opciones de juego', () => {
+  it('shows the home screen with the game options', () => {
     render(<App />);
     expect(screen.getByRole('heading', { name: 'Damas' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /jugar vs bot/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /2 jugadores/i })).toBeInTheDocument();
   });
 
-  it('vuelve a la pantalla de inicio desde una partida', async () => {
+  it('goes back to the home screen from a game', async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole('button', { name: /2 jugadores/i }));

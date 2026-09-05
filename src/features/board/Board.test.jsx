@@ -7,7 +7,7 @@ import { buildBoard } from '@/features/game/test-utils.js';
 import Board from './Board.jsx';
 
 describe('Board', () => {
-  it('selecciona una ficha propia y resalta sus destinos legales', async () => {
+  it('selects an own piece and highlights its legal destinations', async () => {
     const user = userEvent.setup();
     const game = createGame();
     render(<Board board={game.board} turn={game.turn} onMove={() => {}} />);
@@ -19,7 +19,7 @@ describe('Board', () => {
     );
   });
 
-  it('envía el movimiento legal al hacer clic en el destino', async () => {
+  it('sends the legal move when clicking the destination', async () => {
     const user = userEvent.setup();
     const game = createGame();
     const onMove = vi.fn();
@@ -32,7 +32,7 @@ describe('Board', () => {
     expect(move.landings[move.landings.length - 1]).toEqual({ row: 4, col: 1 });
   });
 
-  it('no permite seleccionar fichas del rival', async () => {
+  it('does not allow selecting the rival pieces', async () => {
     const user = userEvent.setup();
     const game = createGame();
     render(<Board board={game.board} turn={game.turn} onMove={() => {}} />);
@@ -42,7 +42,7 @@ describe('Board', () => {
     expect(rivalSquare).not.toHaveClass('board__square--selected');
   });
 
-  it('avisa de la captura obligatoria y resalta las fichas que pueden comer', async () => {
+  it('warns about the mandatory capture and highlights the capturing pieces', async () => {
     const user = userEvent.setup();
     const board = buildBoard([
       [3, 2, PLAYER_1],
@@ -60,13 +60,13 @@ describe('Board', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/no puede capturar/i);
   });
 
-  it('no muestra el aviso de captura cuando no hay capturas', () => {
+  it('does not show the capture notice when there are no captures', () => {
     const game = createGame();
     render(<Board board={game.board} turn={game.turn} onMove={() => {}} />);
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
-  it('muestra la corona en el centro de las fichas que son damas', () => {
+  it('shows the crown in the center of the king pieces', () => {
     const board = buildBoard([
       [4, 3, PLAYER_1, true],
       [5, 4, PLAYER_2],
@@ -78,7 +78,7 @@ describe('Board', () => {
     expect(manSquare.querySelector('.piece__crown')).not.toBeInTheDocument();
   });
 
-  it('ignora los clics cuando el tablero está deshabilitado', async () => {
+  it('ignores clicks when the board is disabled', async () => {
     const user = userEvent.setup();
     const game = createGame();
     const onMove = vi.fn();

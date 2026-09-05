@@ -123,7 +123,7 @@ export function applyMoveToBoard(board, move) {
   const next = board.map((rowCells) => [...rowCells]);
   const piece = next[move.from.row][move.from.col];
   if (piece === null) {
-    throw new Error('No hay una ficha en la casilla de origen');
+    throw new Error('There is no piece on the origin square');
   }
   next[move.from.row][move.from.col] = null;
   for (const captured of move.captured) {

@@ -4,7 +4,7 @@ import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
 import Scoreboard from './Scoreboard.jsx';
 
 describe('Scoreboard', () => {
-  it('muestra los nombres, los contadores y el marcador VS', () => {
+  it('shows the names, the counters and the VS marker', () => {
     render(
       <Scoreboard
         player1Name="TÚ"
@@ -21,7 +21,7 @@ describe('Scoreboard', () => {
     expect(screen.getByText('VS')).toBeInTheDocument();
   });
 
-  it('muestra el badge de dificultad cuando se indica', () => {
+  it('shows the difficulty badge when provided', () => {
     render(
       <Scoreboard
         player1Name="TÚ"
@@ -35,7 +35,7 @@ describe('Scoreboard', () => {
     expect(screen.getByText('Difícil')).toBeInTheDocument();
   });
 
-  it('resalta al jugador en turno', () => {
+  it('highlights the player in turn', () => {
     const { container } = render(
       <Scoreboard
         player1Name="TÚ"

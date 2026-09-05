@@ -15,6 +15,13 @@
   gap: var(--spacing-sm);
 }
 
+.game-screen__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
 .game-screen__thinking {
   font-size: var(--font-size-label);
   color: var(--color-text-secondary);

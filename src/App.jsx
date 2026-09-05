@@ -21,6 +21,8 @@ function App() {
   };
 
   const goHome = () => {
+    // se reinicia la partida para cancelar turnos pendientes del bot al salir
+    restart();
     setScreen('home');
   };
 

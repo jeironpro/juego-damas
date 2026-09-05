@@ -47,9 +47,17 @@ function GameScreen({
             El bot está pensando…
           </p>
         )}
-        <Button variant="secondary" icon="undo" onClick={onUndo} disabled={undoDisabled}>
-          Deshacer
-        </Button>
+        <div className="game-screen__actions">
+          <Button variant="secondary" icon="undo" onClick={onUndo} disabled={undoDisabled}>
+            Deshacer
+          </Button>
+          <Button variant="secondary" icon="restart_alt" onClick={onRestart}>
+            Reiniciar
+          </Button>
+          <Button variant="secondary" icon="arrow_back" onClick={onMenu}>
+            Menú
+          </Button>
+        </div>
       </div>
       {game.over && winnerName !== null && (
         <GameOverScreen title={overTitle} onRestart={onRestart} onMenu={onMenu} />

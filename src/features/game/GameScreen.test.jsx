@@ -59,6 +59,39 @@ describe('GameScreen — modo local', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent(/Ganaste/i);
   });
 
+  it('reinicia la partida desde los controles', async () => {
+    const user = userEvent.setup();
+    const game = applyMove(createGame(), getLegalMovesForGame(createGame())[0]);
+    const onRestart = vi.fn();
+    render(
+      <GameScreen
+        game={game}
+        onMove={() => {}}
+        onUndo={() => {}}
+        onRestart={onRestart}
+        onMenu={() => {}}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /reiniciar/i }));
+    expect(onRestart).toHaveBeenCalledTimes(1);
+  });
+
+  it('vuelve al menú desde los controles', async () => {
+    const user = userEvent.setup();
+    const onMenu = vi.fn();
+    render(
+      <GameScreen
+        game={createGame()}
+        onMove={() => {}}
+        onUndo={() => {}}
+        onRestart={() => {}}
+        onMenu={onMenu}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: /menú/i }));
+    expect(onMenu).toHaveBeenCalledTimes(1);
+  });
+
   it('en modo bot bloquea el tablero y avisa mientras piensa', () => {
     const game = { ...createGame(), turn: PLAYER_2 };
     render(

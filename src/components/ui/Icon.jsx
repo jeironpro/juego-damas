@@ -1,7 +1,7 @@
 // Glifo de la librería Material Symbols (Rounded); decorativo, sin accesibilidad propia
-function Icon({ name }) {
+function Icon({ name, className = '' }) {
   return (
-    <span className="material-symbols-rounded" aria-hidden="true">
+    <span className={`material-symbols-rounded ${className}`.trim()} aria-hidden="true">
       {name}
     </span>
   );

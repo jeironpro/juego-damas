@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import HomeScreen from './HomeScreen.jsx';
 
 describe('HomeScreen', () => {
-  it('permite elegir el modo contra el bot, su dificultad y arrancar', async () => {
+  it('lets the player pick the bot mode, its difficulty and start', async () => {
     const user = userEvent.setup();
     const onStart = vi.fn();
     render(<HomeScreen onStart={onStart} />);
@@ -16,7 +16,7 @@ describe('HomeScreen', () => {
     expect(onStart).toHaveBeenCalledWith('bot', 'dificil');
   });
 
-  it('permite elegir el modo de dos jugadores', async () => {
+  it('lets the player pick the two-player mode', async () => {
     const user = userEvent.setup();
     const onStart = vi.fn();
     render(<HomeScreen onStart={onStart} />);
@@ -25,7 +25,7 @@ describe('HomeScreen', () => {
     expect(onStart).toHaveBeenCalledWith('local', 'dificil');
   });
 
-  it('muestra el selector de dificultad solo en modo bot', async () => {
+  it('shows the difficulty selector only in bot mode', async () => {
     const user = userEvent.setup();
     render(<HomeScreen onStart={() => {}} />);
     expect(screen.queryByRole('group', { name: 'Dificultad del bot' })).not.toBeInTheDocument();

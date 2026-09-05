@@ -2,11 +2,18 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
-import { createGame, applyMove, undoMove, getLegalMovesForGame } from '@/features/game/game.js';
+import { createGame, applyMove, undoMove } from '@/features/game/game.js';
+import { getLegalMoves } from '@/features/game/moves.js';
 import GameScreen from './GameScreen.jsx';
 
-describe('GameScreen — modo local', () => {
-  it('permite mover una ficha y alternar el turno', async () => {
+// Partida tras la primera jugada del jugador 1
+function gameAfterFirstMove() {
+  const game = createGame();
+  return applyMove(game, getLegalMoves(game.board, game.turn)[0]);
+}
+
+describe('GameScreen — local mode', () => {
+  it('lets a player move a piece and alternates the turn', async () => {
     const user = userEvent.setup();
     const game = createGame();
     const onMove = vi.fn((move) => move);
@@ -16,9 +23,9 @@ describe('GameScreen — modo local', () => {
     expect(onMove).toHaveBeenCalledTimes(1);
   });
 
-  it('deshabilita el botón de deshacer tras usarlo (una vez por partida)', async () => {
+  it('disables the undo button after using it (once per game)', async () => {
     const user = userEvent.setup();
-    const game = applyMove(createGame(), getLegalMovesForGame(createGame())[0]);
+    const game = gameAfterFirstMove();
     const onUndo = vi.fn();
     const { rerender } = render(<GameScreen game={game} onMove={() => {}} onUndo={onUndo} />);
     const undoButton = screen.getByRole('button', { name: /deshacer/i });
@@ -30,7 +37,7 @@ describe('GameScreen — modo local', () => {
     expect(screen.getByRole('button', { name: /deshacer/i })).toBeDisabled();
   });
 
-  it('muestra el modal de fin de partida con el ganador', () => {
+  it('shows the game over modal with the winner', () => {
     const game = { ...createGame(), over: true, winner: PLAYER_1 };
     render(
       <GameScreen
@@ -44,7 +51,7 @@ describe('GameScreen — modo local', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent(/Jugador 1 gana/i);
   });
 
-  it('en modo bot anuncia la victoria del jugador', () => {
+  it('announces the player victory in bot mode', () => {
     const game = { ...createGame(), over: true, winner: PLAYER_1 };
     render(
       <GameScreen
@@ -59,9 +66,9 @@ describe('GameScreen — modo local', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent(/Ganaste/i);
   });
 
-  it('reinicia la partida desde los controles', async () => {
+  it('restarts the game from the controls', async () => {
     const user = userEvent.setup();
-    const game = applyMove(createGame(), getLegalMovesForGame(createGame())[0]);
+    const game = gameAfterFirstMove();
     const onRestart = vi.fn();
     render(
       <GameScreen
@@ -76,7 +83,7 @@ describe('GameScreen — modo local', () => {
     expect(onRestart).toHaveBeenCalledTimes(1);
   });
 
-  it('vuelve al menú desde los controles', async () => {
+  it('goes back to the menu from the controls', async () => {
     const user = userEvent.setup();
     const onMenu = vi.fn();
     render(
@@ -92,7 +99,7 @@ describe('GameScreen — modo local', () => {
     expect(onMenu).toHaveBeenCalledTimes(1);
   });
 
-  it('en modo bot bloquea el tablero y avisa mientras piensa', () => {
+  it('in bot mode disables the board and warns while thinking', () => {
     const game = { ...createGame(), turn: PLAYER_2 };
     render(
       <GameScreen

@@ -74,7 +74,7 @@ materializados como _custom properties_ en `src/styles/tokens.css`. Los iconos u
 
 ## Calidad
 
-- **Tests**: 64 tests entre el motor de reglas, el bot, hooks y componentes (`yarn test`).
+- **Tests**: 63 tests entre el motor de reglas, el bot, hooks y componentes (`yarn test`).
 - **CI**: pipeline en `.github/workflows/ci.yml` que ejecuta lint, tests y build en cada pull
   request y push a `main`.
 - **Pre-commit**: Husky + lint-staged aplican ESLint y Prettier sobre los archivos modificados.

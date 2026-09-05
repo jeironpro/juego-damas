@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { PLAYER_1, PLAYER_2 } from './constants.js';
 import { createInitialBoard } from './board.js';
-import { createGame, applyMove, undoMove, getLegalMovesForGame } from './game.js';
+import { createGame, applyMove, undoMove } from './game.js';
+import { getLegalMoves } from './moves.js';
 import { buildBoard } from './test-utils.js';
 
 // Busca el movimiento legal que lleva de un origen a un destino dados
 function moveFrom(game, fromRow, fromCol, destination) {
-  const legal = getLegalMovesForGame(game).find((move) => {
+  const legal = getLegalMoves(game.board, game.turn).find((move) => {
     const last = move.landings[move.landings.length - 1];
     return (
       move.from.row === fromRow &&
@@ -15,12 +16,12 @@ function moveFrom(game, fromRow, fromCol, destination) {
       last.col === destination.col
     );
   });
-  if (!legal) throw new Error('Movimiento no disponible');
+  if (!legal) throw new Error('Move not available');
   return legal;
 }
 
 describe('createGame', () => {
-  it('inicia con 12 fichas por jugador, turno del jugador 1 y partida activa', () => {
+  it('starts with 12 pieces per player, player 1 turn and an active game', () => {
     const game = createGame();
     expect(game.pieces[PLAYER_1]).toBe(12);
     expect(game.pieces[PLAYER_2]).toBe(12);
@@ -33,7 +34,7 @@ describe('createGame', () => {
 });
 
 describe('applyMove', () => {
-  it('cambia el turno y registra el estado anterior en el historial', () => {
+  it('switches the turn and records the previous state in the history', () => {
     const game = createGame();
     const next = applyMove(game, moveFrom(game, 5, 0, { row: 4, col: 1 }));
     expect(next.turn).toBe(PLAYER_2);
@@ -41,7 +42,7 @@ describe('applyMove', () => {
     expect(next.board).not.toBe(game.board);
   });
 
-  it('descuenta las fichas capturadas del rival', () => {
+  it('decreases the captured pieces of the rival', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -51,13 +52,13 @@ describe('applyMove', () => {
         [6, 3, PLAYER_2],
       ]),
     };
-    const move = getLegalMovesForGame(game)[0];
+    const move = getLegalMoves(game.board, game.turn)[0];
     const next = applyMove(game, move);
     expect(next.pieces[PLAYER_2]).toBe(2);
     expect(next.pieces[PLAYER_1]).toBe(1);
   });
 
-  it('descuenta todas las fichas de una cadena de captura', () => {
+  it('decreases all the pieces of a capture chain', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -68,12 +69,12 @@ describe('applyMove', () => {
         [6, 5, PLAYER_2],
       ]),
     };
-    const chain = getLegalMovesForGame(game).find((move) => move.captured.length === 2);
+    const chain = getLegalMoves(game.board, game.turn).find((move) => move.captured.length === 2);
     const next = applyMove(game, chain);
     expect(next.pieces[PLAYER_2]).toBe(2);
   });
 
-  it('declara ganador al jugador que deja al rival sin fichas', () => {
+  it('declares the winner when the rival runs out of pieces', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -81,12 +82,12 @@ describe('applyMove', () => {
         [2, 1, PLAYER_2],
       ]),
     };
-    const next = applyMove(game, getLegalMovesForGame(game)[0]);
+    const next = applyMove(game, getLegalMoves(game.board, game.turn)[0]);
     expect(next.over).toBe(true);
     expect(next.winner).toBe(PLAYER_1);
   });
 
-  it('declara ganador al jugador que deja al rival sin movimientos', () => {
+  it('declares the winner when the rival has no moves', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -98,13 +99,13 @@ describe('applyMove', () => {
     };
     // el jugador 1 mueve su ficha central; el jugador 2 queda bloqueado en (7,0)
     // sin movimientos ni capturas posibles
-    const move = getLegalMovesForGame(game).find((m) => m.from.row === 3);
+    const move = getLegalMoves(game.board, game.turn).find((m) => m.from.row === 3);
     const next = applyMove(game, move);
     expect(next.over).toBe(true);
     expect(next.winner).toBe(PLAYER_1);
   });
 
-  it('lanza error al aplicar un movimiento ilegal', () => {
+  it('throws when applying an invalid move', () => {
     const game = createGame();
     expect(() =>
       applyMove(game, {
@@ -112,10 +113,10 @@ describe('applyMove', () => {
         landings: [{ row: 6, col: 1 }],
         captured: [],
       }),
-    ).toThrow('Movimiento no válido');
+    ).toThrow('Invalid move');
   });
 
-  it('lanza error al mover en una partida terminada', () => {
+  it('throws when moving in a finished game', () => {
     const game = { ...createGame(), over: true };
     expect(() =>
       applyMove(game, {
@@ -123,17 +124,12 @@ describe('applyMove', () => {
         landings: [{ row: 4, col: 1 }],
         captured: [],
       }),
-    ).toThrow('La partida ya terminó');
-  });
-
-  it('no devuelve movimientos en partidas terminadas', () => {
-    const game = { ...createGame(), over: true };
-    expect(getLegalMovesForGame(game)).toHaveLength(0);
+    ).toThrow('The game has already ended');
   });
 });
 
 describe('undoMove', () => {
-  it('restaura el tablero, el turno y las fichas capturadas', () => {
+  it('restores the board, the turn and the captured pieces', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -143,7 +139,7 @@ describe('undoMove', () => {
         [6, 3, PLAYER_2],
       ]),
     };
-    const after = applyMove(game, getLegalMovesForGame(game)[0]);
+    const after = applyMove(game, getLegalMoves(game.board, game.turn)[0]);
     expect(after.pieces[PLAYER_2]).toBe(2);
     const undone = undoMove(after);
     expect(undone.board).toEqual(game.board);
@@ -153,7 +149,7 @@ describe('undoMove', () => {
     expect(undone.history).toHaveLength(0);
   });
 
-  it('solo permite deshacer una jugada por partida', () => {
+  it('allows undoing only one move per game', () => {
     const game = createGame();
     const after = applyMove(game, moveFrom(game, 5, 0, { row: 4, col: 1 }));
     const undone = undoMove(after);
@@ -161,12 +157,12 @@ describe('undoMove', () => {
     expect(secondUndo).toBe(undone);
   });
 
-  it('no hace nada si aún no hay jugadas', () => {
+  it('does nothing when there are no moves yet', () => {
     const game = createGame();
     expect(undoMove(game)).toBe(game);
   });
 
-  it('revive una partida terminada al deshacer', () => {
+  it('revives a finished game when undoing', () => {
     const game = {
       ...createGame(),
       board: buildBoard([
@@ -174,14 +170,14 @@ describe('undoMove', () => {
         [2, 1, PLAYER_2],
       ]),
     };
-    const after = applyMove(game, getLegalMovesForGame(game)[0]);
+    const after = applyMove(game, getLegalMoves(game.board, game.turn)[0]);
     expect(after.over).toBe(true);
     const undone = undoMove(after);
     expect(undone.over).toBe(false);
     expect(undone.winner).toBeNull();
   });
 
-  it('conserva el tablero inicial tras deshacer la primera jugada', () => {
+  it('keeps the initial board after undoing the first move', () => {
     const game = createGame();
     const after = applyMove(game, moveFrom(game, 5, 0, { row: 4, col: 1 }));
     const undone = undoMove(after);

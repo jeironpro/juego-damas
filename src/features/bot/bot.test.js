@@ -14,7 +14,7 @@ function botTurnGame() {
 }
 
 describe('chooseMove', () => {
-  it('siempre devuelve un movimiento legal en todos los niveles', () => {
+  it('always returns a legal move at every difficulty', () => {
     const game = botTurnGame();
     for (const difficulty of DIFFICULTIES) {
       const move = chooseMove(game, difficulty, () => 0.5);
@@ -24,12 +24,12 @@ describe('chooseMove', () => {
     }
   });
 
-  it('devuelve null si el bot no tiene movimientos', () => {
+  it('returns null when the bot has no moves', () => {
     const game = { ...createGame(), board: buildBoard([[0, 1, PLAYER_1]]), turn: PLAYER_2 };
     expect(chooseMove(game, 'dificil')).toBeNull();
   });
 
-  it('prioriza la cadena de captura más larga en los niveles medio y difícil', () => {
+  it('prefers the longest capture chain at medium and hard difficulty', () => {
     // la ficha del bot puede capturar una pieza (3,2) o dos en cadena (5,2) y (5,4)
     const game = {
       ...createGame(),
@@ -47,14 +47,14 @@ describe('chooseMove', () => {
     }
   });
 
-  it('es determinista con la misma semilla de azar', () => {
+  it('is deterministic with the same random seed', () => {
     const game = botTurnGame();
     const first = chooseMove(game, 'dificil', () => 0.42);
     const second = chooseMove(game, 'dificil', () => 0.42);
     expect(moveKey(first)).toBe(moveKey(second));
   });
 
-  it('resuelve posiciones de medio juego con la dificultad alta', () => {
+  it('solves mid-game positions at high difficulty', () => {
     const game = botTurnGame();
     const botMove = chooseMove(game, 'dificil', () => 0.5);
     expect(botMove).not.toBeNull();
@@ -64,7 +64,7 @@ describe('chooseMove', () => {
 });
 
 describe('difficulty', () => {
-  it('define etiquetas y profundidades para todos los niveles', () => {
+  it('defines labels and depths for every level', () => {
     expect(DIFFICULTY_LABELS.facil).toBe('Fácil');
     expect(DIFFICULTY_LABELS.medio).toBe('Medio');
     expect(DIFFICULTY_LABELS.dificil).toBe('Difícil');

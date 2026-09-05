@@ -4,8 +4,8 @@ import { createInitialBoard, countPieces } from './board.js';
 import { getLegalMoves, applyMoveToBoard, moveKey, isLegalMove } from './moves.js';
 import { buildBoard } from './test-utils.js';
 
-describe('getLegalMoves — posición inicial', () => {
-  it('el jugador 1 dispone de 7 movimientos simples', () => {
+describe('getLegalMoves — initial position', () => {
+  it('gives player 1 seven simple moves', () => {
     const board = createInitialBoard();
     const moves = getLegalMoves(board, PLAYER_1);
     expect(moves).toHaveLength(7);
@@ -15,7 +15,7 @@ describe('getLegalMoves — posición inicial', () => {
     }
   });
 
-  it('las fichas del jugador 1 no retroceden en un movimiento simple', () => {
+  it('does not let player 1 pieces move backwards in a simple move', () => {
     const board = buildBoard([[5, 0, PLAYER_1]]);
     const moves = getLegalMoves(board, PLAYER_1);
     // la única diagonal libre es hacia delante: (4,1)
@@ -24,8 +24,8 @@ describe('getLegalMoves — posición inicial', () => {
   });
 });
 
-describe('getLegalMoves — capturas', () => {
-  it('la captura es obligatoria: con capturas disponibles no se devuelven movimientos simples', () => {
+describe('getLegalMoves — captures', () => {
+  it('makes captures mandatory: simple moves are hidden when captures exist', () => {
     const board = buildBoard([
       [3, 2, PLAYER_1],
       [2, 1, PLAYER_2],
@@ -41,7 +41,7 @@ describe('getLegalMoves — capturas', () => {
     }
   });
 
-  it('la ficha puede capturar hacia atrás (regla española)', () => {
+  it('lets a piece capture backwards (Spanish rules)', () => {
     const board = buildBoard([
       [4, 3, PLAYER_1],
       [5, 4, PLAYER_2],
@@ -52,7 +52,7 @@ describe('getLegalMoves — capturas', () => {
     expect(moves[0].captured).toEqual([{ row: 5, col: 4 }]);
   });
 
-  it('genera cadenas de captura múltiple', () => {
+  it('generates multi-capture chains', () => {
     const board = buildBoard([
       [5, 0, PLAYER_1],
       [4, 1, PLAYER_2],
@@ -67,7 +67,7 @@ describe('getLegalMoves — capturas', () => {
     ]);
   });
 
-  it('permite cadenas que vuelven a la casilla de origen', () => {
+  it('allows chains that return to the origin square', () => {
     const board = buildBoard([
       [5, 2, PLAYER_1],
       [4, 3, PLAYER_2],
@@ -82,8 +82,8 @@ describe('getLegalMoves — capturas', () => {
   });
 });
 
-describe('coronación', () => {
-  it('una ficha que llega a la última fila se convierte en dama', () => {
+describe('promotion', () => {
+  it('turns a piece reaching the last row into a king', () => {
     const board = buildBoard([[1, 0, PLAYER_1]]);
     const move = getLegalMoves(board, PLAYER_1).find((m) => moveKey(m) === '1:0>0:1');
     expect(move).toBeDefined();
@@ -91,7 +91,7 @@ describe('coronación', () => {
     expect(next[0][1]).toEqual({ player: PLAYER_1, king: true });
   });
 
-  it('una ficha corona también al final de una cadena de captura', () => {
+  it('also crowns a piece at the end of a capture chain', () => {
     const board = buildBoard([
       [2, 1, PLAYER_1],
       [1, 2, PLAYER_2],
@@ -103,7 +103,7 @@ describe('coronación', () => {
     expect(next[1][2]).toBeNull();
   });
 
-  it('una dama conserva su condición al moverse a la última fila', () => {
+  it('keeps the king status when moving to the last row', () => {
     const board = buildBoard([[1, 0, PLAYER_1, true]]);
     const move = getLegalMoves(board, PLAYER_1).find((m) => moveKey(m) === '1:0>0:1');
     expect(move).toBeDefined();
@@ -112,8 +112,8 @@ describe('coronación', () => {
   });
 });
 
-describe('damas', () => {
-  it('una dama se mueve en las cuatro diagonales', () => {
+describe('kings', () => {
+  it('move in the four diagonals', () => {
     const board = buildBoard([[3, 2, PLAYER_1, true]]);
     const moves = getLegalMoves(board, PLAYER_1);
     expect(moves).toHaveLength(4);
@@ -123,7 +123,7 @@ describe('damas', () => {
 });
 
 describe('applyMoveToBoard', () => {
-  it('retira las fichas capturadas y mueve la ficha', () => {
+  it('removes the captured pieces and moves the piece', () => {
     const board = buildBoard([
       [4, 3, PLAYER_1],
       [5, 4, PLAYER_2],
@@ -136,7 +136,7 @@ describe('applyMoveToBoard', () => {
     expect(countPieces(next, PLAYER_2)).toBe(0);
   });
 
-  it('lanza error si no hay ficha en la casilla de origen', () => {
+  it('throws when there is no piece on the origin square', () => {
     const board = createInitialBoard();
     expect(() =>
       applyMoveToBoard(board, {
@@ -149,7 +149,7 @@ describe('applyMoveToBoard', () => {
 });
 
 describe('isLegalMove', () => {
-  it('distingue movimientos legales de ilegales', () => {
+  it('distinguishes legal moves from illegal ones', () => {
     const board = createInitialBoard();
     const legal = getLegalMoves(board, PLAYER_1)[0];
     expect(isLegalMove(board, PLAYER_1, legal)).toBe(true);

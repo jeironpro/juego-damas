@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import GameOverScreen from './GameOverScreen.jsx';
 
 describe('GameOverScreen', () => {
-  it('muestra el título del ganador y ejecuta las acciones', async () => {
+  it('shows the winner title and runs the actions', async () => {
     const user = userEvent.setup();
     const onRestart = vi.fn();
     const onMenu = vi.fn();

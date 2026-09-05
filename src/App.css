@@ -2,13 +2,3 @@
   min-height: 100vh;
   padding: var(--spacing-xxl) 0;
 }
-
-.app__header {
-  margin-bottom: var(--spacing-xl);
-  text-align: center;
-}
-
-.app__title {
-  font-size: var(--font-size-display);
-  font-weight: var(--font-weight-extrabold);
-}

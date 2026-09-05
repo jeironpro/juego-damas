@@ -30,15 +30,47 @@ describe('GameScreen — modo local', () => {
     expect(screen.getByRole('button', { name: /deshacer/i })).toBeDisabled();
   });
 
-  it('muestra el mensaje de fin de partida con el ganador', () => {
+  it('muestra el modal de fin de partida con el ganador', () => {
     const game = { ...createGame(), over: true, winner: PLAYER_1 };
-    render(<GameScreen game={game} onMove={() => {}} onUndo={() => {}} />);
-    expect(screen.getByRole('status')).toHaveTextContent(/Jugador 1 gana/i);
+    render(
+      <GameScreen
+        game={game}
+        onMove={() => {}}
+        onUndo={() => {}}
+        onRestart={() => {}}
+        onMenu={() => {}}
+      />,
+    );
+    expect(screen.getByRole('dialog')).toHaveTextContent(/Jugador 1 gana/i);
+  });
+
+  it('en modo bot anuncia la victoria del jugador', () => {
+    const game = { ...createGame(), over: true, winner: PLAYER_1 };
+    render(
+      <GameScreen
+        game={game}
+        onMove={() => {}}
+        onUndo={() => {}}
+        onRestart={() => {}}
+        onMenu={() => {}}
+        botMode
+      />,
+    );
+    expect(screen.getByRole('dialog')).toHaveTextContent(/Ganaste/i);
   });
 
   it('en modo bot bloquea el tablero y avisa mientras piensa', () => {
     const game = { ...createGame(), turn: PLAYER_2 };
-    render(<GameScreen game={game} onMove={() => {}} onUndo={() => {}} botMode />);
+    render(
+      <GameScreen
+        game={game}
+        onMove={() => {}}
+        onUndo={() => {}}
+        onRestart={() => {}}
+        onMenu={() => {}}
+        botMode
+      />,
+    );
     expect(screen.getByRole('status')).toHaveTextContent(/pensando/i);
     expect(screen.getByRole('button', { name: 'Fila 6 columna 1' })).toBeDisabled();
   });

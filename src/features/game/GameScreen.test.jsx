@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PLAYER_1 } from '@/features/game/constants.js';
+import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
 import { createGame, applyMove, undoMove, getLegalMovesForGame } from '@/features/game/game.js';
 import GameScreen from './GameScreen.jsx';
 
@@ -34,5 +34,12 @@ describe('GameScreen — modo local', () => {
     const game = { ...createGame(), over: true, winner: PLAYER_1 };
     render(<GameScreen game={game} onMove={() => {}} onUndo={() => {}} />);
     expect(screen.getByRole('status')).toHaveTextContent(/Jugador 1 gana/i);
+  });
+
+  it('en modo bot bloquea el tablero y avisa mientras piensa', () => {
+    const game = { ...createGame(), turn: PLAYER_2 };
+    render(<GameScreen game={game} onMove={() => {}} onUndo={() => {}} botMode />);
+    expect(screen.getByRole('status')).toHaveTextContent(/pensando/i);
+    expect(screen.getByRole('button', { name: 'Fila 6 columna 1' })).toBeDisabled();
   });
 });

@@ -1,7 +1,7 @@
 import Button from '@/components/ui/Button.jsx';
-import Icon from '@/components/ui/Icon.jsx';
 import Scoreboard from '@/features/scoreboard/Scoreboard.jsx';
 import Board from '@/features/board/Board.jsx';
+import GameOverScreen from '@/features/menu/GameOverScreen.jsx';
 import { PLAYER_1, PLAYER_2 } from '@/features/game/constants.js';
 import './GameScreen.css';
 
@@ -11,6 +11,8 @@ function GameScreen({
   game,
   onMove,
   onUndo,
+  onRestart,
+  onMenu,
   player1Name = 'Jugador 1',
   player2Name = 'Jugador 2',
   badge = null,
@@ -20,6 +22,13 @@ function GameScreen({
   const undoDisabled = botTurn || game.undoUsed || game.history.length === 0 || game.over;
   const winnerName =
     game.winner === PLAYER_1 ? player1Name : game.winner === PLAYER_2 ? player2Name : null;
+  const overTitle = botMode
+    ? game.winner === PLAYER_1
+      ? '¡Ganaste!'
+      : '¡El bot ganó!'
+    : winnerName !== null
+      ? `¡${winnerName} gana!`
+      : '';
 
   return (
     <div className="game-screen">
@@ -43,10 +52,7 @@ function GameScreen({
         </Button>
       </div>
       {game.over && winnerName !== null && (
-        <div className="game-screen__result" role="status">
-          <Icon name="emoji_events" />
-          <span>¡{winnerName} gana!</span>
-        </div>
+        <GameOverScreen title={overTitle} onRestart={onRestart} onMenu={onMenu} />
       )}
     </div>
   );

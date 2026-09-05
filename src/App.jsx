@@ -1,13 +1,16 @@
+import { useGame } from '@/hooks/useGame.js';
+import GameScreen from '@/features/game/GameScreen.jsx';
 import './App.css';
 
 function App() {
+  const { game, makeMove, undo } = useGame();
   return (
-    <main className="app">
-      <section className="app__card">
+    <div className="app">
+      <header className="app__header">
         <h1 className="app__title">Damas</h1>
-        <p className="app__subtitle">Proyecto en construcción</p>
-      </section>
-    </main>
+      </header>
+      <GameScreen game={game} onMove={makeMove} onUndo={undo} />
+    </div>
   );
 }
 
